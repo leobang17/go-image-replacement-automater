@@ -2,12 +2,15 @@ package cache
 
 import (
 	"bufio"
+	"fmt"
+	"os"
 	"path/filepath"
 	"time"
 )
 
 const (
-	timestampLayout = time.RFC3339
+	timestampLayout string 	= time.RFC3339
+	tempFilePath string 		= "tempfile"
 )
 
 type cache struct {
@@ -33,15 +36,33 @@ func (c *cache) ReadCache() time.Time {
 	defer cacheFile.Close()
 
 	scanner := bufio.NewScanner(cacheFile)
-	var firstLine string
+var firstLine string
 	if scanner.Scan() {
 		firstLine = scanner.Text()	
 	}
 	cachedTime, _ := time.Parse(timestampLayout, firstLine)
-	return cachedTime
-}
+		return cachedTime
+	}
 
 func (c *cache) WriteCache() error {
+	cacheFile, err := c.openCacheFile()
+	if err != nil {
+		fmt.Println("Cache update failed while opening cache file.")
+		return err
+	}
+	defer cacheFile.Close()
 
-	return nil
+	tempFile, err := os.Create(tempFilePath)
+	if err != nil {
+		fmt.Println("Cache update failed while updating cache.")
+		return err
+	}
+	defer tempFile.Close()
+
+	var updateErr error
+	defer c.rollback(tempFile, &updateErr)
+	c.updateCache(cacheFile, tempFile)
+	c.flush(tempFile)
+
+	return updateErr
 }
