@@ -19,7 +19,7 @@ type cache struct {
 }
 
 func Cache() *cache {
-	cacheDir := filepath.Join(".", "cached")
+	cacheDir := filepath.Join(".", ".cached")
 	cacheFilePath := filepath.Join(cacheDir, "go-image-replacement-automater")
 
 	return &cache {
@@ -36,13 +36,13 @@ func (c *cache) ReadCache() time.Time {
 	defer cacheFile.Close()
 
 	scanner := bufio.NewScanner(cacheFile)
-var firstLine string
 	if scanner.Scan() {
-		firstLine = scanner.Text()	
-	}
-	cachedTime, _ := time.Parse(timestampLayout, firstLine)
+		cachedTime, _ := time.Parse(timestampLayout, scanner.Text())
 		return cachedTime
 	}
+	
+	return time.Time{}
+}
 
 func (c *cache) WriteCache() error {
 	cacheFile, err := c.openCacheFile()
