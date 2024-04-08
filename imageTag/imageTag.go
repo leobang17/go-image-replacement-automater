@@ -1,6 +1,9 @@
 package imagetag
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 type ImageTag struct {
 	FullTag string
@@ -14,6 +17,23 @@ type ImageParser interface {
 
 func ParseImageTag(line string) ([]ImageTag, error) {
 	parsedTags := []ImageTag{}
+	mp := newMarkdownParser()
+	hp := newHtmlParser()
+
+	mresult, merr := mp.Parse(line)
+	if merr == nil {
+		parsedTags = append(parsedTags, *mresult)
+	}
+
+	hresult, herr := hp.Parse(line)
+	if herr == nil {
+		parsedTags = append(parsedTags, *hresult)
+	}
+	
+	if merr != nil && herr != nil {
+		return nil, errors.New("not an image tag")
+	}
+
 	return parsedTags, nil
 }
 
