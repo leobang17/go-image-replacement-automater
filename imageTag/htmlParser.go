@@ -24,7 +24,7 @@ func (hp *htmlParser) Parse(line string) (*ImageTag, error) {
 	imageTag := new(ImageTag)
 	fullTag := hp.fullRegex.FindString(line)
 	if fullTag == "" {
-		return nil, errors.New("not an image tag")
+		return nil, errors.New("not an html image tag")
 	}
 	imageTag.FullTag = fullTag
 	
