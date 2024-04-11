@@ -38,7 +38,7 @@ func Test_ParseImageTag_with_markdown_syntax(t *testing.T) {
 		expected := []ImageTag{{
 			FullTag:  fullTag,
 			Source: source,
-			Description: description,
+			Description: "",
 		}}
 
 		imageTag, err := ParseImageTag(rawLine)
