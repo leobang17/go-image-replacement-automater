@@ -38,6 +38,6 @@ func ParseImageTag(line string) ([]ImageTag, error) {
 }
 
 
-func Reconstruct(tag *ImageTag) string {
+func Reconstruct(tag ImageTag) string {
 	return fmt.Sprintf("![%s](%s)", tag.Description, tag.Source)
 }
