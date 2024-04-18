@@ -56,7 +56,12 @@ func NewAtomicSection[T any]() AtomicSection[T] {
 
 		go func() {
 			wg.Wait()
-			successChan <- "success"
+			select {
+			case <- ctx.Done():
+				return 
+			default:
+				successChan <- "success"
+			}
 		}()
 
 		select {
