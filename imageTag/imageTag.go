@@ -3,6 +3,7 @@ package imagetag
 import (
 	"errors"
 	"fmt"
+	"path/filepath"
 )
 
 type ImageTag struct {
@@ -11,9 +12,27 @@ type ImageTag struct {
 	Source string
 }
 
+
+func (t ImageTag) ConstructRelativeTag() ImageTag {
+	relativeSrc := filepath.Join("./", "imgs", filepath.Base(t.Source))
+	newTag := ImageTag {
+		Description: t.Description,
+		Source: relativeSrc,
+	} 
+	
+	newTag.reconstruct()
+	return newTag
+}
+	
+func (t *ImageTag) reconstruct() {
+	t.FullTag = fmt.Sprintf("![%s](%s)", t.Description, t.Source)
+}
+
 type ImageParser interface {
 	Parse(line string) (*ImageTag, error)
 }
+
+
 
 func ParseImageTag(line string) ([]ImageTag, error) {
 	parsedTags := []ImageTag{}
@@ -35,9 +54,4 @@ func ParseImageTag(line string) ([]ImageTag, error) {
 	}
 
 	return parsedTags, nil
-}
-
-
-func Reconstruct(tag ImageTag) string {
-	return fmt.Sprintf("![%s](%s)", tag.Description, tag.Source)
 }

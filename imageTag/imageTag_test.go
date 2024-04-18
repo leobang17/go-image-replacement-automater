@@ -137,3 +137,23 @@ func Test_ParseImageTag_with_html_syntax(t *testing.T) {
 		}
 	})
 }
+
+func Test_ImageTag_ConstructRelativeTag(t *testing.T) {    
+	originTag := ImageTag{
+			Description: "Image of me",
+			Source:      "/Users/leobang/selfie.png",
+			FullTag: 		 `<img alt="Image of me" src="/Users/leobang/selfie.png"`,
+	}
+
+	expected := ImageTag{
+		Description: "Image of me",
+		Source:      "imgs/selfie.png",
+		FullTag: 		 `![Image of me](imgs/selfie.png)`,
+	}
+	
+	actual := originTag.ConstructRelativeTag()
+
+	if diff := cmp.Diff(expected, actual); diff != "" {
+		t.Error(diff)
+	}
+}
